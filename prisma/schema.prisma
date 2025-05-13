@@ -13,3 +13,12 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model ShortUrl {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  original String    @map("original_url")
+  code String        @unique @map("shorten_code")
+  accessCount Int      @default(0)
+}
