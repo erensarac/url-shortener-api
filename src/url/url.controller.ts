@@ -1,17 +1,19 @@
-import { Controller, Post, Body, Get, Param, Res, Redirect, } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Res, Delete } from '@nestjs/common';
 import { UrlService } from './url.service';
 import { ShortUrl as UrlModel } from 'generated/prisma/client';
 import { Response } from 'express';
 
-@Controller('url')
+@Controller('')
 export class UrlController {
   constructor(private readonly urlService: UrlService) {}
 
   @Get('/:code')
   async getShortenURL(@Param('code') code: string, @Res() res: Response) {
-    const data = await this.urlService.getShortenURL({ code });
+    const data = await this.urlService.shortUrl({ code });
 
     if (data) {
+      await this.urlService.incrementAccessCount(data.id);
+
       return res.status(302).redirect(data.original)
     }
 

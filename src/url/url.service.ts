@@ -9,13 +9,13 @@ export class UrlService {
 
   async createUniqueCode(): Promise<string> {
     const maxRetries = 26;
-    
+
     for (let i = 0; i < maxRetries; i++) {
       const code = nanoid(6);
       const exists = await this.prisma.shortUrl.findUnique({ where: { code } });
       if (!exists) return code;
     }
-    
+
     throw new Error('Unique code generation failed after multiple attempts');
   }
 
@@ -32,18 +32,9 @@ export class UrlService {
     });
   }
 
-  async getShortenURL(
-    code: Prisma.ShortUrlWhereUniqueInput,
-  ): Promise<ShortUrl | null> {
-    const data = await this.prisma.shortUrl.findUnique({
+  async shortUrl(code: Prisma.ShortUrlWhereUniqueInput): Promise<ShortUrl | null> {
+    return await this.prisma.shortUrl.findUnique({
       where: code,
     });
-
-    if (data) {
-      this.incrementAccessCount(data.id);
-    }
-
-    return data;
   }
-
 }
