@@ -7,6 +7,7 @@ import {
   Res,
   Delete,
   Put,
+  NotFoundException,
 } from '@nestjs/common';
 import { UrlService } from './url.service';
 import { ShortUrl, ShortUrl as UrlModel } from 'generated/prisma/client';
@@ -33,7 +34,7 @@ export class UrlController {
       return res.status(302).redirect(data.original);
     }
 
-    return res.status(404).send('Not found');
+    throw new NotFoundException("No URL found for the provided short code.")
   }
 
   @Put('/:code')
