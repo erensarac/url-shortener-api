@@ -26,15 +26,43 @@ export class UrlService {
     });
   }
 
-  async createShortenURL(data: Prisma.ShortUrlCreateInput): Promise<ShortUrl> {
+  async createShortUrl(data: Prisma.ShortUrlCreateInput): Promise<ShortUrl> {
     return this.prisma.shortUrl.create({
       data: { ...data },
     });
   }
 
-  async shortUrl(code: Prisma.ShortUrlWhereUniqueInput): Promise<ShortUrl | null> {
-    return await this.prisma.shortUrl.findUnique({
+  async shortUrl(
+    code: Prisma.ShortUrlWhereUniqueInput,
+  ): Promise<ShortUrl | null> {
+    return this.prisma.shortUrl.findUnique({
       where: code,
+    });
+  }
+
+  async updateShortUrl(
+    where: Prisma.ShortUrlWhereUniqueInput,
+    data: Prisma.ShortUrlUpdateInput
+  ): Promise<ShortUrl | null> {
+    return this.prisma.shortUrl.update({
+      where,
+      data,
+    });
+  }
+
+  async deleteShortUrl(
+    where: Prisma.ShortUrlWhereUniqueInput,
+  ): Promise<ShortUrl> {
+    return this.prisma.shortUrl.delete({
+      where,
+    });
+  }
+
+  async getUrlStats(
+    where: Prisma.ShortUrlWhereUniqueInput,
+  ): Promise<ShortUrl | null> {
+    return this.prisma.shortUrl.findUnique({
+      where,
     });
   }
 }
