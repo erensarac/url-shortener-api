@@ -8,20 +8,26 @@ import {
   Delete,
   Put,
   NotFoundException,
+  Req,
+  UseGuards
 } from '@nestjs/common';
 import { UrlService } from './url.service';
 import { ShortUrl, ShortUrl as UrlModel } from 'generated/prisma/client';
 import { Response } from 'express';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { AuthenticatedRequest } from '../auth/auth.type';
 
 @Controller('')
 export class UrlController {
   constructor(private readonly urlService: UrlService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  async createURL(@Body() data: { original: string }): Promise<UrlModel> {
-    const shortCode = await this.urlService.createUniqueCode();
-
-    return this.urlService.createShortUrl({ ...data, shortCode });
+  async createURL(
+    @Req() req: AuthenticatedRequest,
+    @Body() data: { originalUrl: string },
+  ): Promise<UrlModel> {
+    return this.urlService.createShortUrl({ ...data, ownerId: req.user.id });
   }
 
   @Get('/:code')

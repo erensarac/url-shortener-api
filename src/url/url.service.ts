@@ -28,11 +28,16 @@ export class UrlService {
     });
   }
 
-  async createShortUrl(data: Prisma.ShortUrlCreateInput): Promise<ShortUrl> {
-    return this.prisma.shortUrl.create({
-      data: { ...data },
+  async createShortUrl(
+    data: Pick<ShortUrl, 'originalUrl' | 'ownerId'>,
+  ): Promise<ShortUrl> {
+    const shortCode = await this.createUniqueCode();
+
+    return await this.prisma.shortUrl.create({
+      data: { ...data, shortCode },
     });
   }
+
 
   async shortUrl(
     code: Prisma.ShortUrlWhereUniqueInput,
