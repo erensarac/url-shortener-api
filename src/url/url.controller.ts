@@ -36,16 +36,19 @@ export class UrlController {
     return { url: originalUrl };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put('/:code')
   async updateShortUrl(@Param('code') shortCode: string, @Body() data: ShortUrl) {
     return await this.urlService.updateShortUrl({ shortCode }, data);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete('/:id')
   async deleteShortURL(@Param('id') id: string) {
     return await this.urlService.deleteShortUrl({ id: id });
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('/:code/stats')
   async getShortUrlStats(@Param('code') shortCode: string) {
     return this.urlService.getUrlStats({ shortCode });
