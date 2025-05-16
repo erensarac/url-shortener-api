@@ -19,14 +19,14 @@ export class UrlController {
 
   @Post()
   async createURL(@Body() data: { original: string }): Promise<UrlModel> {
-    const code = await this.urlService.createUniqueCode();
+    const shortCode = await this.urlService.createUniqueCode();
 
-    return this.urlService.createShortUrl({ ...data, code });
+    return this.urlService.createShortUrl({ ...data, shortCode });
   }
 
   @Get('/:code')
-  async getShortUrl(@Param('code') code: string, @Res() res: Response) {
-    const data = await this.urlService.shortUrl({ code });
+  async getShortUrl(@Param('code') shortCode: string, @Res() res: Response) {
+    const data = await this.urlService.shortUrl({ shortCode });
 
     if (data) {
       await this.urlService.incrementAccessCount(data.id);
@@ -38,8 +38,8 @@ export class UrlController {
   }
 
   @Put('/:code')
-  async updateShortUrl(@Param('code') code: string, @Body() data: ShortUrl) {
-    return await this.urlService.updateShortUrl({ code }, data);
+  async updateShortUrl(@Param('code') shortCode: string, @Body() data: ShortUrl) {
+    return await this.urlService.updateShortUrl({ shortCode }, data);
   }
 
   @Delete('/:id')
@@ -48,7 +48,7 @@ export class UrlController {
   }
 
   @Get('/:code/stats')
-  async getShortUrlStats(@Param('code') code: string) {
-    return this.urlService.getUrlStats({ code });
+  async getShortUrlStats(@Param('code') shortCode: string) {
+    return this.urlService.getUrlStats({ shortCode });
   }
 }

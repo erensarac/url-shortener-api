@@ -11,9 +11,11 @@ export class UrlService {
     const maxRetries = 26;
 
     for (let i = 0; i < maxRetries; i++) {
-      const code = nanoid(6);
-      const exists = await this.prisma.shortUrl.findUnique({ where: { code } });
-      if (!exists) return code;
+      const shortCode = nanoid(6);
+      const exists = await this.prisma.shortUrl.findUnique({
+        where: { shortCode },
+      });
+      if (!exists) return shortCode;
     }
 
     throw new Error('Unique code generation failed after multiple attempts');
