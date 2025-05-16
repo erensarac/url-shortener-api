@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { nanoid } from 'nanoid';
 import { PrismaService } from '../prisma.service';
 import { ShortUrl, Prisma } from 'generated/prisma/client';
@@ -38,8 +38,18 @@ export class UrlService {
     });
   }
 
+  async shortUrl(code: Prisma.ShortUrlWhereUniqueInput): Promise<ShortUrl> {
+    const shortUrl = await this.findShortUrl(code);
 
-  async shortUrl(
+    if (!shortUrl) {
+      throw new NotFoundException('No URL found for the provided short code.');
+    }
+
+    await this.incrementAccessCount(shortUrl.id);
+    return shortUrl;
+  }
+
+  async findShortUrl(
     code: Prisma.ShortUrlWhereUniqueInput,
   ): Promise<ShortUrl | null> {
     return this.prisma.shortUrl.findUnique({

@@ -4,20 +4,18 @@ import {
   Body,
   Get,
   Param,
-  Res,
   Delete,
   Put,
-  NotFoundException,
+  UseGuards,
   Req,
-  UseGuards
+  Redirect,
 } from '@nestjs/common';
 import { UrlService } from './url.service';
 import { ShortUrl, ShortUrl as UrlModel } from 'generated/prisma/client';
-import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AuthenticatedRequest } from '../auth/auth.type';
 
-@Controller('')
+@Controller()
 export class UrlController {
   constructor(private readonly urlService: UrlService) {}
 
@@ -31,16 +29,11 @@ export class UrlController {
   }
 
   @Get('/:code')
-  async getShortUrl(@Param('code') shortCode: string, @Res() res: Response) {
-    const data = await this.urlService.shortUrl({ shortCode });
+  @Redirect()
+  async getShortUrl(@Param('code') shortCode: string) {
+    const { originalUrl } = await this.urlService.shortUrl({ shortCode });
 
-    if (data) {
-      await this.urlService.incrementAccessCount(data.id);
-
-      return res.status(302).redirect(data.original);
-    }
-
-    throw new NotFoundException("No URL found for the provided short code.")
+    return { url: originalUrl };
   }
 
   @Put('/:code')
